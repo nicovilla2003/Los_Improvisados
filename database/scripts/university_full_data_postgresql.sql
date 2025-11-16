@@ -22,7 +22,7 @@ INSERT INTO CITIES (code, name, dept_code) VALUES
 
 -- Insert Faculties
 INSERT INTO FACULTIES (code, name, location, phone_number, dean_id) VALUES
-(1, 'Facultad de Ciencias', 'Call3', '555-1234', '1001'),
+(1, 'Facultad de Ciencias', 'Call3', '555-1234', '1006'),
 (2, 'Facultad de Ingeniería', 'Call4', '555-5678', '1002');
 
 -- Insert Campuses
