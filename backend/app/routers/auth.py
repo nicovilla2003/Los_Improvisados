@@ -1,4 +1,3 @@
-# app/routers/auth.py
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -8,6 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.database.deps import get_db
 from app.models.user import User
+from app.models.employee import Employee
+from app.models.area import Area
 from app.core.security import (
     verify_password,
     create_access_token,
@@ -17,6 +18,8 @@ from app.core.security import (
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 security = HTTPBearer()
+
+WELLBEING_AREA_NAME = "Área de Bienestar"
 
 
 # ======== Schemas ========
@@ -37,7 +40,10 @@ class UserOut(BaseModel):
     is_active: bool
 
     class Config:
-        from_attributes = True  # para que acepte objetos ORM
+        from_attributes = True  # Pydantic v2 / orm_mode en v1
+
+
+# ======== Helpers internos ========
 
 def authenticate_user(db: Session, username: str, password: str) -> User | None:
     user: User | None = db.query(User).filter(User.username == username).first()
@@ -52,11 +58,55 @@ def authenticate_user(db: Session, username: str, password: str) -> User | None:
 
     return user
 
+
+def is_instructor(db: Session, user: User) -> bool:
+    """
+    Retorna True si el usuario está asociado a un empleado
+    cuyo employee_type es 'Instructor'.
+    """
+    if not user.employee_id:
+        return False
+
+    emp = db.query(Employee).filter(Employee.id == user.employee_id).first()
+    if not emp:
+        return False
+
+    return emp.employee_type == "Instructor"
+
+
+def is_wellbeing_coordinator(db: Session, user: User) -> bool:
+    """
+    Retorna True si el usuario es el coordinador del Área de Bienestar.
+    No se hardcodea '1007', se consulta la tabla AREAS.
+    """
+    if not user.employee_id:
+        return False
+
+    area = (
+        db.query(Area)
+        .filter(
+            Area.coordinator_id == user.employee_id,
+            Area.name == WELLBEING_AREA_NAME,
+        )
+        .first()
+    )
+
+    return area is not None
+
+
+# ======== Endpoints ========
+
+
 @router.post("/login", response_model=TokenResponse)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
     """
-    Recibe username + password, valida el usuario
-    y devuelve un JWT simple.
+    Login NORMAL:
+    - Estudiantes: pueden iniciar sesión sin restricciones extra.
+    - Empleados: solo si son de tipo 'Instructor'.
+    El token incluye:
+    - sub: username
+    - role: rol del usuario (STUDENT / EMPLOYEE)
+    - is_admin: False (aunque sea instructor)
     """
     user = authenticate_user(db, data.username, data.password)
     if not user:
@@ -64,8 +114,67 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario o contraseña incorrectos",
         )
-    
-    token_data = {"sub": user.username, "role": user.role}
+
+    # Lógica según rol
+    if user.role == "STUDENT":
+        # Estudiante: ok
+        pass
+    elif user.role == "EMPLOYEE":
+        # Solo se permite acceso a empleados que sean Instructor
+        if not is_instructor(db, user):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Solo instructores pueden iniciar sesión en esta plataforma.",
+            )
+    else:
+        # Cualquier otro rol no está contemplado en el login normal
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Rol no autorizado para este tipo de login.",
+        )
+
+    is_admin = is_wellbeing_coordinator(db, user)
+
+    token_data = {
+        "sub": user.username,
+        "role": user.role,
+        "is_admin": is_admin,
+    }
+    access_token = create_access_token(
+        data=token_data,
+        expires_delta=timedelta(minutes=60),
+    )
+    return TokenResponse(access_token=access_token)
+
+
+@router.post("/admin-login", response_model=TokenResponse)
+def admin_login(data: LoginRequest, db: Session = Depends(get_db)):
+    """
+    Login ESPECÍFICO para el módulo de administración.
+    Solo el Jefe del Área de Bienestar puede autenticarse aquí.
+    - Debe ser un usuario asociado a empleado.
+    - Debe ser coordinador del Área de Bienestar.
+    El token incluye is_admin=True para diferenciarlo claramente.
+    """
+    user = authenticate_user(db, data.username, data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario o contraseña incorrectos",
+        )
+
+    # Debe ser empleado y coordinador de bienestar
+    if user.role != "EMPLOYEE" or not is_wellbeing_coordinator(db, user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Solo el jefe del Área de Bienestar puede iniciar sesión como administrador.",
+        )
+
+    token_data = {
+        "sub": user.username,
+        "role": user.role,
+        "is_admin": True,
+    }
     access_token = create_access_token(
         data=token_data,
         expires_delta=timedelta(minutes=60),
@@ -81,6 +190,7 @@ def read_me(
     """
     Endpoint protegido de ejemplo.
     Lee el token, busca el usuario y lo devuelve.
+    (Aquí podrías más adelante también devolver is_admin si lo quieres en la respuesta.)
     """
     token = credentials.credentials
 
