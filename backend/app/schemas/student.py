@@ -1,44 +1,49 @@
 from pydantic import BaseModel
 from typing import Optional
-
-# Schemas relacionados con estudiantes.
+from datetime import date
 
 
 class StudentBase(BaseModel):
     """
     Campos base de un estudiante.
-    Debe alinearse con la tabla 'students' definida en PostgreSQL.
-    En espera de definición final del esquema.
     """
-    name: str
-    program: Optional[str] = None
-    semester: Optional[int] = None
+    id: str
+    first_name: str
+    last_name: str
+    email: str
+    birth_date: date
+    birth_place_code: int
+    campus_code: int
 
 
-class StudentCreate(StudentBase):
+class StudentOut(StudentBase):
     """
-    Datos necesarios para crear un estudiante (si se permite desde la API).
-    En muchos casos los estudiantes pueden venir de la BD institucional
-    y esta operación no se usará.
+    Datos devueltos al consultar un estudiante.
     """
-    pass
+    
+    class Config:
+        from_attributes = True
+
+
+class StudentCreate(BaseModel):
+    """
+    Datos necesarios para crear un estudiante.
+    """
+    id: str
+    first_name: str
+    last_name: str
+    email: str
+    birth_date: date
+    birth_place_code: int
+    campus_code: int
 
 
 class StudentUpdate(BaseModel):
     """
     Campos editables de un estudiante.
-    En espera de definición final.
     """
-    name: Optional[str] = None
-    program: Optional[str] = None
-    semester: Optional[int] = None
-
-
-class StudentRead(StudentBase):
-    """
-    Datos devueltos al consultar un estudiante.
-    """
-    id: int
-
-    class Config:
-        from_attributes = True
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    birth_date: Optional[date] = None
+    campus_code: Optional[int] = None
