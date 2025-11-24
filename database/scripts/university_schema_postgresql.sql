@@ -138,6 +138,52 @@ CREATE TABLE USERS (
 
 ALTER TABLE USERS ADD CONSTRAINT USERS_PK PRIMARY KEY (username);
 
+CREATE TABLE RECOMMENDATIONS (
+    id              SERIAL PRIMARY KEY,
+    trainer_id      VARCHAR(15) NOT NULL,
+    student_id      VARCHAR(15) NOT NULL,
+    message         TEXT NOT NULL,
+    progress_doc_id VARCHAR(50),
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ROUTINES (
+    id                  SERIAL PRIMARY KEY,
+    name                VARCHAR(100) NOT NULL,
+    description         TEXT,
+    difficulty          VARCHAR(20),
+    created_by_username VARCHAR(30) NOT NULL,
+    created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE EXERCISES (
+    id                  SERIAL PRIMARY KEY,
+    name                VARCHAR(100) NOT NULL,
+    type                VARCHAR(20) NOT NULL,
+    description         TEXT,
+    duration_minutes    INTEGER,
+    difficulty          VARCHAR(20),
+    video_url           VARCHAR(255),
+    created_by_username VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE ROUTINE_EXERCISES (
+    id               SERIAL PRIMARY KEY,
+    routine_id       INTEGER NOT NULL,
+    exercise_id      INTEGER NOT NULL,
+    order_index      INTEGER,
+    sets             INTEGER,
+    reps             INTEGER,
+    duration_seconds INTEGER
+);
+
+CREATE TABLE ASSIGNMENTS (
+    employee_id VARCHAR(15) NOT NULL,
+    student_id  VARCHAR(15) NOT NULL,
+    PRIMARY KEY (employee_id, student_id)
+);
+
+
 -- Relaciones opcionales: un usuario puede corresponder a un estudiante o a un empleado
 ALTER TABLE USERS ADD CONSTRAINT USERS_STUDENTS_FK 
     FOREIGN KEY (student_id) REFERENCES STUDENTS (id);
@@ -152,3 +198,34 @@ ALTER TABLE USERS ADD CONSTRAINT USERS_ONE_ROLE_CHK
         OR (student_id IS NULL AND employee_id IS NOT NULL)
     );
 
+ALTER TABLE RECOMMENDATIONS
+    ADD CONSTRAINT RECOMMENDATIONS_TRAINER_FK
+    FOREIGN KEY (trainer_id) REFERENCES EMPLOYEES(id);
+
+ALTER TABLE RECOMMENDATIONS
+    ADD CONSTRAINT RECOMMENDATIONS_STUDENT_FK
+    FOREIGN KEY (student_id) REFERENCES STUDENTS(id);
+
+ALTER TABLE ROUTINES
+    ADD CONSTRAINT ROUTINES_USERS_FK
+    FOREIGN KEY (created_by_username) REFERENCES USERS(username);
+
+ALTER TABLE EXERCISES
+    ADD CONSTRAINT EXERCISES_USERS_FK
+    FOREIGN KEY (created_by_username) REFERENCES USERS(username);
+
+ALTER TABLE ROUTINE_EXERCISES
+    ADD CONSTRAINT ROUTINE_EXERCISES_ROUTINE_FK
+    FOREIGN KEY (routine_id) REFERENCES ROUTINES(id);
+
+ALTER TABLE ROUTINE_EXERCISES
+    ADD CONSTRAINT ROUTINE_EXERCISES_EXERCISE_FK
+    FOREIGN KEY (exercise_id) REFERENCES EXERCISES(id);
+
+ALTER TABLE ASSIGNMENTS
+    ADD CONSTRAINT ASSIGNMENTS_EMPLOYEE_FK
+    FOREIGN KEY (employee_id) REFERENCES EMPLOYEES(id);
+
+ALTER TABLE ASSIGNMENTS
+    ADD CONSTRAINT ASSIGNMENTS_STUDENT_FK
+    FOREIGN KEY (student_id) REFERENCES STUDENTS(id);

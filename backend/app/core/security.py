@@ -57,18 +57,19 @@ from sqlalchemy.orm import Session
 
 from app.database.deps import get_db
 from app.models.user import User
+from app.core.security import decode_access_token  # si este archivo NO es security.py
 
 security = HTTPBearer()
 
 
 def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ) -> tuple[User, dict]:
     """
-    Lee el token, valida y devuelve:
-    - El usuario ORM
-    - El payload del token (útil para saber el rol y si es admin)
+    Lee el token, lo valida y devuelve:
+    - user: el usuario ORM
+    - token_data: el payload completo del JWT (incluye is_admin, role, etc.)
     """
     token = credentials.credentials
 

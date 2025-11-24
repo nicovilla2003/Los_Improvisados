@@ -13,3 +13,4 @@ class Employee(Base):
     faculty_code  = Column(Integer, ForeignKey("faculties.code"), nullable=False)
     campus_code   = Column(Integer, ForeignKey("campuses.code"), nullable=False)
     birth_place_code = Column(Integer, ForeignKey("cities.code"), nullable=False)
+    

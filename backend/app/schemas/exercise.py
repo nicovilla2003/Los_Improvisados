@@ -1,40 +1,25 @@
+# app/schemas/exercise.py
 from pydantic import BaseModel
-from typing import Optional
-
-# Schemas relacionados con ejercicios.
 
 
 class ExerciseBase(BaseModel):
-    """
-    Información base de un ejercicio.
-    En espera de alinearse con la tabla 'exercises'.
-    """
     name: str
-    muscle_group: Optional[str] = None
-    description: Optional[str] = None
+    type: str  # 'cardio', 'fuerza', 'movilidad'
+    description: str | None = None
+    duration_minutes: int | None = None
+    difficulty: str | None = None  # 'beginner', 'intermediate', 'advanced'
+    video_url: str | None = None   # URL opcional
 
 
 class ExerciseCreate(ExerciseBase):
-    """
-    Datos necesarios para crear un ejercicio.
-    """
+    """Datos necesarios para crear un ejercicio."""
     pass
 
 
-class ExerciseUpdate(BaseModel):
-    """
-    Campos editables de un ejercicio.
-    """
-    name: Optional[str] = None
-    muscle_group: Optional[str] = None
-    description: Optional[str] = None
-
-
-class ExerciseRead(ExerciseBase):
-    """
-    Datos devueltos al consultar un ejercicio.
-    """
+class ExerciseOut(ExerciseBase):
+    """Lo que devolvemos al frontend."""
     id: int
+    created_by_username: str
 
     class Config:
-        from_attributes = True
+        from_attributes = True  # para usar objetos ORM

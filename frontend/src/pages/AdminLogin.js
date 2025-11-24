@@ -1,6 +1,5 @@
-// src/App.js
 import React, { useState } from "react";
-import "./App.css";
+import "/styles/AdminLogin.css";
 
 const API_BASE_URL = "http://127.0.0.1:8000"; // backend FastAPI
 
@@ -16,7 +15,7 @@ function App() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const response = await fetch(`${API_BASE_URL}/auth/admin-login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

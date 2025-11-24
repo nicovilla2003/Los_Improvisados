@@ -11,6 +11,8 @@ def seed_database():
     ]
     db.add_all(countries)
 
+    db.commit()
+
     departments = [
         department.Department(code=1, name="Valle del Cauca", country_code=1),
         department.Department(code=2, name="Cundinamarca", country_code=1),
@@ -19,6 +21,8 @@ def seed_database():
         department.Department(code=11, name="Bogotá D.C.", country_code=1)
     ]
     db.add_all(departments)
+
+    db.commit()
 
     cities = [
         city.City(code=101, name="Cali", dept_code=1),
@@ -29,11 +33,7 @@ def seed_database():
     ]
     db.add_all(cities)
 
-    faculties = [
-        faculty.Faculty(code=1, name="Facultad de Ciencias", location="Call3", phone_number="555-1234", dean_id="1001"),
-        faculty.Faculty(code=2, name="Facultad de Ingeniería", location="Call4", phone_number="555-5678", dean_id="1002"),
-    ]
-    db.add_all(faculties)
+    db.commit()
 
     campuses = [
         campus.Campus(code=1, name="Campus Cali", city_code=101),
@@ -51,11 +51,15 @@ def seed_database():
     ]
     db.add_all(employee_types)
 
+    db.commit()
+
     contract_types = [
         contract_type.ContractType(name="Planta"),
         contract_type.ContractType(name="Cátedra"),
     ]
     db.add_all(contract_types)
+
+    db.commit()
 
     # -- Insert Employees
     # INSERT INTO EMPLOYEES (id, first_name, last_name, email, contract_type, employee_type, faculty_code, campus_code, birth_place_code) VALUES
@@ -160,6 +164,14 @@ def seed_database():
     ]
     db.add_all(employees)
 
+    faculties = [
+        faculty.Faculty(code=1, name="Facultad de Ciencias", location="Call3", phone_number="555-1234", dean_id="1001"),
+        faculty.Faculty(code=2, name="Facultad de Ingeniería", location="Call4", phone_number="555-5678", dean_id="1002"),
+    ]
+    db.add_all(faculties)
+
+    db.commit()
+
     areas = [
         area.Area(code=1, name="Área de Sociales", faculty_code=1, coordinator_id="1001"),
         area.Area(code=2, name="Área de Ingeniería", faculty_code=2, coordinator_id="1003"),
@@ -167,11 +179,15 @@ def seed_database():
     ]
     db.add_all(areas)
 
+    db.commit()
+
     programs = [
         program.Program(code=1, name="Psicología", area_code=1),
         program.Program(code=2, name="Ingeniería de Sistemas", area_code=2),
     ]
     db.add_all(programs)
+
+    db.commit()
 
     subjects = [
         subject.Subject(code="S101", name="Psicología General", program_code=1),
@@ -185,6 +201,8 @@ def seed_database():
     ]
     db.add_all(subjects)
 
+    db.commit()
+
     groups = [
         group.Group(nrc="G101", number=1, semester="2023-2", subject_code="S101", professor_id="1001"),
         group.Group(nrc="G102", number=2, semester="2023-2", subject_code="S102", professor_id="1003"),
@@ -193,6 +211,8 @@ def seed_database():
         group.Group(nrc="G105", number=5, semester="2023-2", subject_code="S106", professor_id="1004"),
     ]
     db.add_all(groups)
+
+    db.commit()
 
     students = [
         student.Student(
@@ -243,6 +263,8 @@ def seed_database():
     ]
     db.add_all(students)
 
+    db.commit()
+
     # INSERT INTO ENROLLMENTS (student_id, NRC, enrollment_date, status) VALUES
     # ('2001', 'G101', '2023-08-01', 'Active'),
     # ('2001', 'G102', '2023-08-01', 'Active'),
@@ -261,6 +283,8 @@ def seed_database():
         enrollment.Enrollment(student_id="2005", nrc="G105", enrollment_date= date(2023, 8, 3), status="Active"),
     ]
     db.add_all(enrollments)
+
+    db.commit()
 
     # -- Insert Users
     # INSERT INTO USERS (username, password_hash, role, student_id, employee_id, is_active, created_at) VALUES
@@ -297,22 +321,10 @@ def seed_database():
     ]
     db.add_all(users)
 
+    db.commit()
 
-        # === ASSIGNMENTS (entrenadores ↔ estudiantes) ===
-    # Empleados 1007 y 1008 son Instructor según los datos de EMPLOYEES.
-    assignments_list = [
-        # Paula (1007) con dos estudiantes
-        assignment.Assignment(employee_id="1007", student_id="2001"),
-        assignment.Assignment(employee_id="1007", student_id="2002"),
+  
 
-        # Andrés (1008) con tres estudiantes
-        assignment.Assignment(employee_id="1008", student_id="2003"),
-        assignment.Assignment(employee_id="1008", student_id="2004"),
-        assignment.Assignment(employee_id="1008", student_id="2005"),
-    ]
-    db.add_all(assignments_list)
-
-    # === EXERCISES (definidos por entrenadores) ===
     exercises_list = [
         exercise.Exercise(
             name="Press de banca",
@@ -354,7 +366,6 @@ def seed_database():
     db.add_all(exercises_list)
     db.flush()  # para que se asignen IDs a los Exercise
 
-    # === ROUTINES (plantillas de entrenadores) ===
     routines_list = [
         routine.Routine(
             name="Fuerza full body principiantes",
@@ -429,13 +440,12 @@ def seed_database():
     ]
     db.add_all(routine_exercises_list)
 
-    # === RECOMMENDATIONS (comentarios de entrenadores sobre el progreso) ===
     recommendations_list = [
         recommendation.Recommendation(
             trainer_id="1007",   # Paula
             student_id="2001",   # Laura
             message="Buen progreso en la rutina de fuerza. Intenta aumentar 2.5kg en press de banca la próxima semana.",
-            progress_doc_id=None,  # Más adelante puedes enlazar con un doc de Mongo
+            progress_doc_id=None,
         ),
         recommendation.Recommendation(
             trainer_id="1007",
@@ -457,6 +467,20 @@ def seed_database():
         ),
     ]
     db.add_all(recommendations_list)
+
+
+    # Empleados 1007 y 1008 son Instructor según los datos de EMPLOYEES.
+    assignments_list = [
+        # Paula (1007) con dos estudiantes
+        assignment.Assignment(employee_id="1007", student_id="2001"),
+        assignment.Assignment(employee_id="1007", student_id="2002"),
+
+        # Andrés (1008) con tres estudiantes
+        assignment.Assignment(employee_id="1008", student_id="2003"),
+        assignment.Assignment(employee_id="1008", student_id="2004"),
+        assignment.Assignment(employee_id="1008", student_id="2005"),
+    ]
+    db.add_all(assignments_list)
 
 
     db.commit()

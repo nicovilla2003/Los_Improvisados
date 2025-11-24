@@ -1,3 +1,275 @@
+
+
+
+DROP TABLE IF EXISTS recommendations CASCADE;
+DROP TABLE IF EXISTS routine_exercises CASCADE;
+DROP TABLE IF EXISTS routines CASCADE;
+DROP TABLE IF EXISTS exercises CASCADE;
+
+DROP TABLE IF EXISTS assignments CASCADE;
+
+DROP TABLE IF EXISTS enrollments CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+DROP TABLE IF EXISTS students CASCADE;
+DROP TABLE IF EXISTS employees CASCADE;
+
+DROP TABLE IF EXISTS employee_types CASCADE;
+DROP TABLE IF EXISTS contract_types CASCADE;
+
+DROP TABLE IF EXISTS groups CASCADE;
+DROP TABLE IF EXISTS subjects CASCADE;
+DROP TABLE IF EXISTS programs CASCADE;
+DROP TABLE IF EXISTS areas CASCADE;
+DROP TABLE IF EXISTS faculties CASCADE;
+
+DROP TABLE IF EXISTS campuses CASCADE;
+DROP TABLE IF EXISTS cities CASCADE;
+DROP TABLE IF EXISTS departments CASCADE;
+DROP TABLE IF EXISTS countries CASCADE;
+
+
+
+CREATE TABLE AREAS (
+    code              INTEGER NOT NULL,
+    name              VARCHAR(20) NOT NULL,
+    faculty_code      INTEGER NOT NULL,
+    coordinator_id    VARCHAR(15) NOT NULL
+);
+
+CREATE UNIQUE INDEX AREAS__IDX ON AREAS (coordinator_id);
+
+ALTER TABLE AREAS ADD CONSTRAINT AREAS_PK PRIMARY KEY (code);
+
+CREATE TABLE SUBJECTS (
+    code            VARCHAR(10) NOT NULL,
+    name            VARCHAR(30) NOT NULL,
+    program_code    INTEGER NOT NULL
+);
+
+ALTER TABLE SUBJECTS ADD CONSTRAINT SUBJECTS_PK PRIMARY KEY (code);
+
+CREATE TABLE CITIES (
+    code       INTEGER NOT NULL,
+    name       VARCHAR(20) NOT NULL,
+    dept_code  INTEGER NOT NULL
+);
+
+ALTER TABLE CITIES ADD CONSTRAINT CITIES_PK PRIMARY KEY (code);
+
+CREATE TABLE DEPARTMENTS (
+    code      INTEGER NOT NULL,
+    name      VARCHAR(20) NOT NULL,
+    country_code INTEGER NOT NULL
+);
+
+ALTER TABLE DEPARTMENTS ADD CONSTRAINT DEPARTMENTS_PK PRIMARY KEY (code);
+
+CREATE TABLE EMPLOYEES (
+    id                  VARCHAR(15) NOT NULL,
+    first_name          VARCHAR(30) NOT NULL,
+    last_name           VARCHAR(30) NOT NULL,
+    email               VARCHAR(30) NOT NULL,
+    contract_type       VARCHAR(30) NOT NULL,
+    employee_type       VARCHAR(30) NOT NULL,
+    faculty_code        INTEGER NOT NULL,
+    campus_code         INTEGER NOT NULL,
+    birth_place_code    INTEGER NOT NULL
+);
+
+ALTER TABLE EMPLOYEES ADD CONSTRAINT EMPLOYEES_PK PRIMARY KEY (id);
+
+CREATE TABLE FACULTIES (
+    code         INTEGER NOT NULL,
+    name         VARCHAR(40) NOT NULL,
+    location     VARCHAR(15) NOT NULL,
+    phone_number VARCHAR(15) NOT NULL,
+    dean_id      VARCHAR(15)
+);
+
+CREATE UNIQUE INDEX FACULTIES__IDX ON FACULTIES (dean_id);
+
+ALTER TABLE FACULTIES ADD CONSTRAINT FACULTIES_PK PRIMARY KEY (code);
+
+CREATE TABLE GROUPS (
+    NRC VARCHAR(10),
+	number          INTEGER NOT NULL,
+    semester        VARCHAR(6) NOT NULL,
+    subject_code    VARCHAR(10) NOT NULL,
+    professor_id    VARCHAR(15) NOT NULL
+);
+
+ALTER TABLE GROUPS ADD CONSTRAINT GROUPS_PK PRIMARY KEY (NRC);
+
+CREATE TABLE COUNTRIES (
+    code  INTEGER NOT NULL,
+    name  VARCHAR(20) NOT NULL
+);
+
+ALTER TABLE COUNTRIES ADD CONSTRAINT COUNTRIES_PK PRIMARY KEY (code);
+
+CREATE TABLE PROGRAMS (
+    code        INTEGER NOT NULL,
+    name        VARCHAR(40) NOT NULL,
+    area_code   INTEGER NOT NULL
+);
+
+ALTER TABLE PROGRAMS ADD CONSTRAINT PROGRAMS_PK PRIMARY KEY (code);
+
+CREATE TABLE CAMPUSES (
+    code       INTEGER NOT NULL,
+    name       VARCHAR(20),
+    city_code  INTEGER NOT NULL
+);
+
+ALTER TABLE CAMPUSES ADD CONSTRAINT CAMPUSES_PK PRIMARY KEY (code);
+
+CREATE TABLE CONTRACT_TYPES (
+    name VARCHAR(30) NOT NULL
+);
+
+ALTER TABLE CONTRACT_TYPES ADD CONSTRAINT CONTRACT_TYPES_PK PRIMARY KEY (name);
+
+CREATE TABLE EMPLOYEE_TYPES (
+    name VARCHAR(30) NOT NULL
+);
+
+ALTER TABLE EMPLOYEE_TYPES ADD CONSTRAINT EMPLOYEE_TYPES_PK PRIMARY KEY (name);
+
+CREATE TABLE STUDENTS (
+    id               VARCHAR(15) NOT NULL,
+    first_name       VARCHAR(30) NOT NULL,
+    last_name        VARCHAR(30) NOT NULL,
+    email            VARCHAR(50) NOT NULL,
+    birth_date       DATE NOT NULL,
+    birth_place_code INTEGER NOT NULL,
+    campus_code      INTEGER NOT NULL
+);
+ALTER TABLE STUDENTS ADD CONSTRAINT STUDENTS_PK PRIMARY KEY (id);
+
+CREATE TABLE ENROLLMENTS (
+    
+	student_id     VARCHAR(15) NOT NULL,
+	NRC VARCHAR(10),
+    enrollment_date DATE NOT NULL,
+    status         VARCHAR(15) NOT NULL  -- 'Active', 'Passed', 'Failed', 'Withdrawn'
+);
+
+
+
+CREATE TABLE USERS (
+    username        VARCHAR(30) NOT NULL,
+    password_hash   VARCHAR(100) NOT NULL,
+    role            VARCHAR(20) NOT NULL,  -- e.g., 'STUDENT', 'EMPLOYEE', 'ADMIN'
+    student_id      VARCHAR(15),
+    employee_id     VARCHAR(15),
+    is_active       BOOLEAN DEFAULT TRUE,
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+ALTER TABLE USERS ADD CONSTRAINT USERS_PK PRIMARY KEY (username);
+
+CREATE TABLE RECOMMENDATIONS (
+    id              SERIAL PRIMARY KEY,
+    trainer_id      VARCHAR(15) NOT NULL,
+    student_id      VARCHAR(15) NOT NULL,
+    message         TEXT NOT NULL,
+    progress_doc_id VARCHAR(50),
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ROUTINES (
+    id                  SERIAL PRIMARY KEY,
+    name                VARCHAR(100) NOT NULL,
+    description         TEXT,
+    difficulty          VARCHAR(20),
+    created_by_username VARCHAR(30) NOT NULL,
+    created_at          TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE EXERCISES (
+    id                  SERIAL PRIMARY KEY,
+    name                VARCHAR(100) NOT NULL,
+    type                VARCHAR(20) NOT NULL,
+    description         TEXT,
+    duration_minutes    INTEGER,
+    difficulty          VARCHAR(20),
+    video_url           VARCHAR(255),
+    created_by_username VARCHAR(30) NOT NULL
+);
+
+CREATE TABLE ROUTINE_EXERCISES (
+    id               SERIAL PRIMARY KEY,
+    routine_id       INTEGER NOT NULL,
+    exercise_id      INTEGER NOT NULL,
+    order_index      INTEGER,
+    sets             INTEGER,
+    reps             INTEGER,
+    duration_seconds INTEGER
+);
+
+CREATE TABLE ASSIGNMENTS (
+    employee_id VARCHAR(15) NOT NULL,
+    student_id  VARCHAR(15) NOT NULL,
+    PRIMARY KEY (employee_id, student_id)
+);
+
+
+-- Relaciones opcionales: un usuario puede corresponder a un estudiante o a un empleado
+ALTER TABLE USERS ADD CONSTRAINT USERS_STUDENTS_FK 
+    FOREIGN KEY (student_id) REFERENCES STUDENTS (id);
+
+ALTER TABLE USERS ADD CONSTRAINT USERS_EMPLOYEES_FK 
+    FOREIGN KEY (employee_id) REFERENCES EMPLOYEES (id);
+
+-- Restricción lógica: un usuario no debe pertenecer a ambos tipos simultáneamente
+ALTER TABLE USERS ADD CONSTRAINT USERS_ONE_ROLE_CHK 
+    CHECK (
+        (student_id IS NOT NULL AND employee_id IS NULL)
+        OR (student_id IS NULL AND employee_id IS NOT NULL)
+    );
+
+ALTER TABLE RECOMMENDATIONS
+    ADD CONSTRAINT RECOMMENDATIONS_TRAINER_FK
+    FOREIGN KEY (trainer_id) REFERENCES EMPLOYEES(id);
+
+ALTER TABLE RECOMMENDATIONS
+    ADD CONSTRAINT RECOMMENDATIONS_STUDENT_FK
+    FOREIGN KEY (student_id) REFERENCES STUDENTS(id);
+
+ALTER TABLE ROUTINES
+    ADD CONSTRAINT ROUTINES_USERS_FK
+    FOREIGN KEY (created_by_username) REFERENCES USERS(username);
+
+ALTER TABLE EXERCISES
+    ADD CONSTRAINT EXERCISES_USERS_FK
+    FOREIGN KEY (created_by_username) REFERENCES USERS(username);
+
+ALTER TABLE ROUTINE_EXERCISES
+    ADD CONSTRAINT ROUTINE_EXERCISES_ROUTINE_FK
+    FOREIGN KEY (routine_id) REFERENCES ROUTINES(id);
+
+ALTER TABLE ROUTINE_EXERCISES
+    ADD CONSTRAINT ROUTINE_EXERCISES_EXERCISE_FK
+    FOREIGN KEY (exercise_id) REFERENCES EXERCISES(id);
+
+ALTER TABLE ASSIGNMENTS
+    ADD CONSTRAINT ASSIGNMENTS_EMPLOYEE_FK
+    FOREIGN KEY (employee_id) REFERENCES EMPLOYEES(id);
+
+ALTER TABLE ASSIGNMENTS
+    ADD CONSTRAINT ASSIGNMENTS_STUDENT_FK
+    FOREIGN KEY (student_id) REFERENCES STUDENTS(id);
+
+
+
+
+
+
+
+
+
+
 -- Insert Countries
 INSERT INTO COUNTRIES (code, name) VALUES
 (1, 'Colombia');
@@ -135,7 +407,6 @@ INSERT INTO ROUTINES (name, description, difficulty, created_by_username) VALUES
 INSERT INTO ROUTINE_EXERCISES (routine_id, exercise_id, order_index, sets, reps, duration_seconds) VALUES
 (1, 1, 1, 3, 10, NULL),
 (1, 2, 2, 3, 10, NULL),
-(1, 4, 3, 3, 30, 30),
 
 -- Rutina de cardio y core (Andrés)
 (2, 3, 1, 1, NULL, 1200),   -- 20 minutos

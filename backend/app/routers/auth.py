@@ -15,6 +15,11 @@ from app.core.security import (
     decode_access_token,
 )
 
+from app.core.permissions import (
+    is_instructor,
+    is_wellbeing_coordinator,
+)
+
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 security = HTTPBearer()
@@ -59,44 +64,6 @@ def authenticate_user(db: Session, username: str, password: str) -> User | None:
     return user
 
 
-def is_instructor(db: Session, user: User) -> bool:
-    """
-    Retorna True si el usuario está asociado a un empleado
-    cuyo employee_type es 'Instructor'.
-    """
-    if not user.employee_id:
-        return False
-
-    emp = db.query(Employee).filter(Employee.id == user.employee_id).first()
-    if not emp:
-        return False
-
-    return emp.employee_type == "Instructor"
-
-
-def is_wellbeing_coordinator(db: Session, user: User) -> bool:
-    """
-    Retorna True si el usuario es el coordinador del Área de Bienestar.
-    No se hardcodea '1007', se consulta la tabla AREAS.
-    """
-    if not user.employee_id:
-        return False
-
-    area = (
-        db.query(Area)
-        .filter(
-            Area.coordinator_id == user.employee_id,
-            Area.name == WELLBEING_AREA_NAME,
-        )
-        .first()
-    )
-
-    return area is not None
-
-
-# ======== Endpoints ========
-
-
 @router.post("/login", response_model=TokenResponse)
 def login(data: LoginRequest, db: Session = Depends(get_db)):
     """
@@ -133,7 +100,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
             detail="Rol no autorizado para este tipo de login.",
         )
 
-    is_admin = is_wellbeing_coordinator(db, user)
+    is_admin = False
 
     token_data = {
         "sub": user.username,
@@ -156,6 +123,7 @@ def admin_login(data: LoginRequest, db: Session = Depends(get_db)):
     - Debe ser coordinador del Área de Bienestar.
     El token incluye is_admin=True para diferenciarlo claramente.
     """
+
     user = authenticate_user(db, data.username, data.password)
     if not user:
         raise HTTPException(

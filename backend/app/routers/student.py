@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 
 from app.database.deps import get_db
 from app.core.security import get_current_user
+from app.core.permissions import (
+    is_instructor,
+    is_wellbeing_coordinator,
+)
 from app.models.user import User
 from app.models.student import Student
 from app.models.employee import Employee
@@ -15,52 +19,16 @@ router = APIRouter(
     tags=["Students"]
 )
 
-
-# ---------- Helpers de rol / permisos ----------
-
-def is_wellbeing_coordinator(db: Session, current_user: User) -> bool:
-    """
-    Devuelve True si el usuario actual es el coordinador
-    del Área de Bienestar (no hardcodeamos el id 1007).
-    """
-    if not current_user.employee_id:
-        return False
-
-    # Buscamos un área donde el coordinator_id sea este empleado
-    area = (
-        db.query(Area)
-        .filter(
-            Area.coordinator_id == current_user.employee_id,
-            Area.name == "Área de Bienestar",  # según tus inserts
-        )
-        .first()
-    )
-
-    return area is not None
-
-
-def is_instructor(db: Session, current_user: User) -> bool:
-    """
-    Devuelve True si el empleado asociado al usuario es de tipo 'Instructor'.
-    """
-    if not current_user.employee_id:
-        return False
-
-    emp = db.query(Employee).filter(Employee.id == current_user.employee_id).first()
-    if not emp:
-        return False
-
-    return emp.employee_type == "Instructor"
-
 @router.get("/admin/all", response_model=list[StudentOut])
 def get_all_students_as_admin(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current: tuple[User, dict] = Depends(get_current_user),
 ):
     """
     Solo permitido para la Coordinadora de Bienestar.
     """
-    if not is_wellbeing_coordinator(db, current_user):
+    current_user, token_data = current
+    if not is_wellbeing_coordinator(db, current_user, token_data):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Solo el jefe del Área de Bienestar puede ver todos los estudiantes.",
@@ -73,15 +41,17 @@ def get_all_students_as_admin(
 @router.get("/assigned", response_model=list[StudentOut])
 def get_my_assigned_students(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current: tuple[User, dict] = Depends(get_current_user),
 ):
     """
     Devuelve los estudiantes asignados al instructor actual.
     - Solo funciona si el usuario es un Instructor.
     - Usa la tabla assignments (employee_id, student_id).
     """
+
+    current_user, token_data = current
     # Debe ser instructor
-    if not is_instructor(db, current_user) and not is_wellbeing_coordinator(db, current_user):
+    if not is_instructor(db, current_user) and not is_wellbeing_coordinator(db, current_user, token_data):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Solo los instructores pueden ver sus estudiantes asignados.",
@@ -109,8 +79,11 @@ def get_my_assigned_students(
 def get_student_by_id(
     student_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current: tuple[User, dict] = Depends(get_current_user),
 ):
+    
+    current_user, token_data = current
+
     student = db.query(Student).filter(Student.id == student_id).first()
     if not student:
         raise HTTPException(
@@ -119,7 +92,7 @@ def get_student_by_id(
         )
 
     # 1) Jefe de Bienestar -> acceso completo
-    if is_wellbeing_coordinator(db, current_user):
+    if is_wellbeing_coordinator(db, current_user, token_data):
         return student
 
     # 2) Estudiante -> solo su propia info
