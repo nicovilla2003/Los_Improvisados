@@ -1,3 +1,4 @@
+# app/routers/progress.py
 from datetime import datetime
 
 from bson import ObjectId
@@ -12,13 +13,22 @@ from app.database.mongo import mongo_db
 from app.models.assignment import Assignment
 from app.models.exercise import Exercise
 from app.models.routine import Routine
+from app.models.routine_exercise import RoutineExercise
 from app.models.student import Student
 from app.models.user import User
-from app.schemas.progress import ProgressLogCreate, ProgressLogRead, ProgressLogUpdate
+from app.schemas.progress import (
+    ProgressLogCreate,
+    ProgressLogRead,
+    ProgressLogUpdate,
+)
 
 router = APIRouter(prefix="/progress", tags=["Progress"])
 
-progress_collection = mongo_db.get_collection("progress_logs")
+# Nombre de colección que ya tienes en Mongo
+progress_collection = mongo_db.get_collection("progress")
+
+
+# ---------- Helpers internos ----------
 
 
 def _parse_object_id(log_id: str) -> ObjectId:
@@ -32,16 +42,27 @@ def _parse_object_id(log_id: str) -> ObjectId:
 
 
 def _ensure_student_access(
-    student_id: str, current_user: User, token_data: dict | None, db: Session
+    student_id: str,
+    current_user: User,
+    token_data: dict | None,
+    db: Session,
 ) -> None:
-    """Valida que el usuario autenticado pueda leer/escribir el progreso."""
+    """
+    Valida que el usuario autenticado pueda leer/escribir el progreso
+    de ese estudiante.
+    - STUDENT: solo su propio student_id.
+    - INSTRUCTOR: solo estudiantes que le estén asignados.
+    - ADMIN (coordinadora bienestar): no gestiona progresos aquí.
+    """
 
+    # Admin fuera
     if is_wellbeing_coordinator(db, current_user, token_data):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Los administradores no gestionan progresos desde este módulo.",
         )
 
+    # Estudiante: solo él mismo
     if current_user.role == "STUDENT":
         if not current_user.student_id:
             raise HTTPException(
@@ -55,6 +76,7 @@ def _ensure_student_access(
             )
         return
 
+    # Instructor: solo si el estudiante está asignado a él
     if current_user.role == "EMPLOYEE" and is_instructor(db, current_user):
         assigned = (
             db.query(Assignment)
@@ -71,6 +93,7 @@ def _ensure_student_access(
             )
         return
 
+    # Cualquier otro rol no debería llegar acá
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Rol no autorizado para gestionar progresos.",
@@ -78,6 +101,10 @@ def _ensure_student_access(
 
 
 def _ensure_references_exist(db: Session, data: ProgressLogCreate) -> None:
+    """
+    Valida que los IDs que referencian Postgres existan.
+    """
+
     if data.student_id:
         student = db.query(Student.id).filter(Student.id == data.student_id).first()
         if not student:
@@ -101,24 +128,41 @@ def _ensure_references_exist(db: Session, data: ProgressLogCreate) -> None:
                 detail="Rutina no encontrada.",
             )
 
+    if data.routine_exercise_id is not None:
+        re_row = (
+            db.query(RoutineExercise.id)
+            .filter(RoutineExercise.id == data.routine_exercise_id)
+            .first()
+        )
+        if not re_row:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Registro ROUTINE_EXERCISES no encontrado.",
+            )
+
 
 def _serialize_log(document: dict) -> ProgressLogRead:
+    """
+    Convierte el dict de Mongo en el schema de salida.
+    """
     return ProgressLogRead(
         id=str(document["_id"]),
         student_id=document["student_id"],
+        trainer_username=document.get("trainer_username"),
         exercise_id=document["exercise_id"],
         routine_id=document.get("routine_id"),
-        performed_at=document.get("performed_at") or document.get("date"),
-        reps=document.get("reps"),
-        sets=document.get("sets"),
-        weight_kg=document.get("weight_kg") or document.get("weight"),
-        duration_seconds=document.get("duration_seconds"),
+        routine_exercise_id=document.get("routine_exercise_id"),
+        date=document.get("date"),
+        completed_sets=document.get("completed_sets"),
+        completed_reps=document.get("completed_reps"),
+        completed_duration_seconds=document.get("completed_duration_seconds"),
+        weight_kg=document.get("weight_kg"),
         perceived_exertion=document.get("perceived_exertion"),
         notes=document.get("notes"),
     )
 
 
-def _get_log_or_404(log_id: str):
+def _get_log_or_404(log_id: str) -> dict:
     object_id = _parse_object_id(log_id)
     document = progress_collection.find_one({"_id": object_id})
     if not document:
@@ -129,17 +173,19 @@ def _get_log_or_404(log_id: str):
     return document
 
 
-@router.get(
-    "/logs/{log_id}",
-    response_model=ProgressLogRead,
-)
+# ---------- Endpoints ----------
+
+
+@router.get("/logs/{log_id}", response_model=ProgressLogRead)
 def get_progress_log(
     log_id: str,
     db: Session = Depends(get_db),
     current: tuple[User, dict] = Depends(get_current_user),
 ):
-    """Obtiene un log puntual de progreso."""
-
+    """
+    Obtiene un log puntual de progreso por su ID de Mongo.
+    Solo si el usuario tiene acceso al estudiante dueño del registro.
+    """
     current_user, token_data = current
     document = _get_log_or_404(log_id)
     _ensure_student_access(document["student_id"], current_user, token_data, db)
@@ -154,46 +200,59 @@ def list_student_progress_logs(
     student_id: str,
     exercise_id: int | None = None,
     routine_id: int | None = None,
+    routine_exercise_id: int | None = None,
     start: datetime | None = None,
     end: datetime | None = None,
     db: Session = Depends(get_db),
     current: tuple[User, dict] = Depends(get_current_user),
 ):
-    """Devuelve los registros de progreso de un estudiante con filtros opcionales."""
-
+    """
+    Devuelve los registros de progreso de un estudiante, con filtros opcionales:
+    - exercise_id
+    - routine_id
+    - routine_exercise_id
+    - rango de fechas [start, end]
+    """
     current_user, token_data = current
     _ensure_student_access(student_id, current_user, token_data, db)
 
     filters: dict[str, object] = {"student_id": student_id}
+
     if exercise_id is not None:
         filters["exercise_id"] = exercise_id
     if routine_id is not None:
         filters["routine_id"] = routine_id
+    if routine_exercise_id is not None:
+        filters["routine_exercise_id"] = routine_exercise_id
+
     if start or end:
         date_filter: dict[str, datetime] = {}
         if start:
             date_filter["$gte"] = start
         if end:
             date_filter["$lte"] = end
-        filters["performed_at"] = date_filter
+        filters["date"] = date_filter
 
-    documents = progress_collection.find(filters).sort("performed_at", -1)
+    documents = progress_collection.find(filters).sort("date", -1)
     return [_serialize_log(doc) for doc in documents]
 
 
-@router.post(
-    "/logs",
-    response_model=ProgressLogRead,
-    status_code=status.HTTP_201_CREATED,
-)
+@router.post("/logs", response_model=ProgressLogRead, status_code=status.HTTP_201_CREATED)
 def create_progress_log(
     data: ProgressLogCreate,
     db: Session = Depends(get_db),
     current: tuple[User, dict] = Depends(get_current_user),
 ):
-    """Crea un nuevo log de progreso en MongoDB."""
-
+    """
+    Crea un nuevo log de progreso en MongoDB.
+    - STUDENT: solo puede crear para sí mismo (student_id se toma del token).
+    - INSTRUCTOR: puede crear para estudiantes que tenga asignados.
+    - ADMIN: no permitido.
+    """
     current_user, token_data = current
+
+    # Determinar student_id y trainer_username
+    trainer_username: str | None = None
 
     if current_user.role == "STUDENT":
         if not current_user.student_id:
@@ -202,25 +261,30 @@ def create_progress_log(
                 detail="El usuario no tiene un student_id asociado.",
             )
         data.student_id = current_user.student_id
+
     elif current_user.role == "EMPLOYEE" and is_instructor(db, current_user):
         if not data.student_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Debe indicar el estudiante para crear el registro.",
             )
+        trainer_username = current_user.username
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Rol no autorizado para crear progresos.",
         )
 
+    # Validar permisos sobre el estudiante
     _ensure_student_access(data.student_id, current_user, token_data, db)
+    # Validar que existan las referencias en Postgres
     _ensure_references_exist(db, data)
 
     insert_data = data.model_dump(exclude_none=True)
+    insert_data["trainer_username"] = trainer_username
+
     result = progress_collection.insert_one(insert_data)
     created = progress_collection.find_one({"_id": result.inserted_id})
-
     return _serialize_log(created)
 
 
@@ -231,10 +295,14 @@ def update_progress_log(
     db: Session = Depends(get_db),
     current: tuple[User, dict] = Depends(get_current_user),
 ):
-    """Actualiza campos de un log de progreso existente."""
-
+    """
+    Actualiza campos de un log de progreso existente.
+    - STUDENT: solo si el log es suyo.
+    - INSTRUCTOR: solo si el estudiante está asignado a él.
+    """
     current_user, token_data = current
     document = _get_log_or_404(log_id)
+
     _ensure_student_access(document["student_id"], current_user, token_data, db)
 
     update_fields = data.model_dump(exclude_none=True)
@@ -254,10 +322,14 @@ def delete_progress_log(
     db: Session = Depends(get_db),
     current: tuple[User, dict] = Depends(get_current_user),
 ):
-    """Elimina un log de progreso."""
-
+    """
+    Elimina un log de progreso.
+    - STUDENT: solo logs suyos.
+    - INSTRUCTOR: solo logs de estudiantes asignados.
+    """
     current_user, token_data = current
     document = _get_log_or_404(log_id)
+
     _ensure_student_access(document["student_id"], current_user, token_data, db)
 
     progress_collection.delete_one({"_id": document["_id"]})
