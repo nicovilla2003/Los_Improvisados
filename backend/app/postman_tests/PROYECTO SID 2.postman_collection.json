@@ -1,0 +1,2636 @@
+{
+	"info": {
+		"_postman_id": "1273907f-5d79-4506-8e9d-7defe782b36c",
+		"name": "PROYECTO SID 2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44208445",
+		"_collection_link": "https://nicholasvillaquiran.postman.co/workspace/Nicholas-Villaquiran's-Workspac~f8b6f12b-f8d1-4138-8a6a-8f915d5a9c5c/collection/44208445-1273907f-5d79-4506-8e9d-7defe782b36c?action=share&source=collection_link&creator=44208445"
+	},
+	"item": [
+		{
+			"name": "POST",
+			"item": [
+				{
+					"name": "SESSION",
+					"item": [
+						{
+							"name": "LOGIN STUDENT",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"pm.collectionVariables.set(\"studentAuthToken\", jsonData.access_token);\r",
+											"\r",
+											"pm.test(\"Login returns token\", function () {\r",
+											"  pm.response.to.have.status(200);\r",
+											"  const res = pm.response.json();\r",
+											"  pm.expect(res).to.have.property(\"access_token\");\r",
+											"  pm.expect(res).to.have.property(\"token_type\");\r",
+											"  pm.environment.set(\"authToken\", res.token);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"laura.h\",\r\n  \"password\": \"hash_lh123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "LOGIN INSTRUCTOR",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"pm.collectionVariables.set(\"instructorAuthToken\", jsonData.access_token);\r",
+											"\r",
+											"pm.test(\"Login returns token\", function () {\r",
+											"  pm.response.to.have.status(200);\r",
+											"  const res = pm.response.json();\r",
+											"  pm.expect(res).to.have.property(\"access_token\");\r",
+											"  pm.expect(res).to.have.property(\"token_type\");\r",
+											"  pm.environment.set(\"authToken\", res.token);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"andres.c\",\r\n  \"password\": \"hash_ac123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "LOGIN ADMIN",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const jsonData = pm.response.json();\r",
+											"pm.collectionVariables.set(\"adminAuthToken\", jsonData.access_token);\r",
+											"\r",
+											"pm.test(\"Login returns token\", function () {\r",
+											"  pm.response.to.have.status(200);\r",
+											"  const res = pm.response.json();\r",
+											"  pm.expect(res).to.have.property(\"access_token\");\r",
+											"  pm.expect(res).to.have.property(\"token_type\");\r",
+											"  pm.environment.set(\"authToken\", res.token);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"extra_url\", \"/auth/admin-login\");"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"username\": \"paula.r\",\r\n  \"password\": \"hash_pr123\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/auth/login\");"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "ASSIGNMENTS",
+					"item": [
+						{
+							"name": "Assignment AUTHORIZED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"extra_url\", \"/assignments\");"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response is JSON\", function () {\r",
+											"  pm.response.to.be.withBody;\r",
+											"  pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Authorization header was sent\", function () {\r",
+											"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Product created\", function () {\r",
+											"  pm.response.to.have.status(201);\r",
+											"  const res = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"employee_id\": \"1008\",\r\n    \"student_id\":\"2001\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Assignment UN-AUTHORIZED",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 403 Forbidden\", function () {\r",
+											"  pm.response.to.have.status(403);\r",
+											"  const body = pm.response.json();\r",
+											"  pm.expect(body.detail).to.include(\"Solo el jefe del Área de Bienestar puede asignar instructores.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{instructorAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"employee_id\": \"1007\",\r\n    \"student_id\":\"2004\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "EXERCISE",
+					"item": [
+						{
+							"name": "Exercise AUTHORIZED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response is JSON\", function () {\r",
+											"  pm.response.to.be.withBody;\r",
+											"  pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Authorization header was sent\", function () {\r",
+											"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Product created\", function () {\r",
+											"  pm.response.to.have.status(201);\r",
+											"  const res = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{instructorAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Remo con mancuernas\",\r\n  \"type\": \"fuerza\",\r\n  \"description\": \"Ejercicio de remo inclinado con mancuernas para trabajar espalda media y alta.\",\r\n  \"duration_minutes\": 15,\r\n  \"difficulty\": \"intermediate\",\r\n  \"video_url\": \"https://youtu.be/remo-mancuernas-demo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}/",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Exercise UN-AUTHORIZED",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 403 Forbidden\", function () {\r",
+											"  pm.response.to.have.status(403);\r",
+											"  const body = pm.response.json();\r",
+											"  pm.expect(body.detail).to.include(\"Rol no autorizado para crear ejercicios.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Remo con mancuernas\",\r\n  \"type\": \"fuerza\",\r\n  \"description\": \"Ejercicio de remo inclinado con mancuernas para trabajar espalda media y alta.\",\r\n  \"duration_minutes\": 15,\r\n  \"difficulty\": \"intermediate\",\r\n  \"video_url\": \"https://youtu.be/remo-mancuernas-demo\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}/",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/exercises\");"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "ROUTINE",
+					"item": [
+						{
+							"name": "Routine AUTHORIZED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response is JSON\", function () {\r",
+											"  pm.response.to.be.withBody;\r",
+											"  pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Authorization header was sent\", function () {\r",
+											"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Product created\", function () {\r",
+											"  pm.response.to.have.status(201);\r",
+											"  const res = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studentAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Rutina cualquiera\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}/",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Routine by Instructor AUTHORIZED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response is JSON\", function () {\r",
+											"  pm.response.to.be.withBody;\r",
+											"  pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Authorization header was sent\", function () {\r",
+											"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Product created\", function () {\r",
+											"  pm.response.to.have.status(201);\r",
+											"  const res = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{instructorAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Rutina del Lunes\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}/",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Routine UN-AUTHORIZED",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 403 Forbidden\", function () {\r",
+											"  pm.response.to.have.status(403);\r",
+											"  const body = pm.response.json();\r",
+											"  pm.expect(body.detail).to.include(\"Los administradores no pueden crear rutinas.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Rutina cualquiera\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}/",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/routines\");"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "ROUTINE_EXERCISE",
+					"item": [
+						{
+							"name": "Routine_Exercise AUTHORIZED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response is JSON\", function () {\r",
+											"  pm.response.to.be.withBody;\r",
+											"  pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Authorization header was sent\", function () {\r",
+											"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Product created\", function () {\r",
+											"  pm.response.to.have.status(201);\r",
+											"  const res = pm.response.json();\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{instructorAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"routine_id\": 4,\r\n  \"exercise_id\": 5,\r\n  \"sets\": 3,\r\n  \"reps\": 10\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}/",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Routine_Exercise UN-AUTHORIZED",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Should return 403 Forbidden\", function () {\r",
+											"  pm.response.to.have.status(403);\r",
+											"  const body = pm.response.json();\r",
+											"  pm.expect(body.detail).to.include(\"Los administradores no pueden modificar las rutinas.\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{adminAuthToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"routine_id\": 4,\r\n  \"exercise_id\": 5,\r\n  \"sets\": 3,\r\n  \"reps\": 10\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}{{extra_url}}/",
+									"host": [
+										"{{base_url}}{{extra_url}}"
+									],
+									"path": [
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/routine-exercises\");"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "GET",
+			"item": [
+				{
+					"name": "STUDENT",
+					"item": [
+						{
+							"name": "AUTHORIZED",
+							"item": [
+								{
+									"name": "Specific Student AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{instructorAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/2003",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"2003"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Assigned Students AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{instructorAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/assigned",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"assigned"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "All Students AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/admin/all",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"admin",
+												"all"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "UN-AUTHORIZED",
+							"item": [
+								{
+									"name": "Specific Student UN-AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Should return 403 Forbidden\", function () {\r",
+													"  pm.response.to.have.status(403);\r",
+													"  const body = pm.response.json();\r",
+													"  pm.expect(body.detail).to.include(\"No puedes ver la información de otros estudiantes.\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{studentAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/2003",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"2003"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Assigned Students UN-AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Should return 403 Forbidden\", function () {\r",
+													"  pm.response.to.have.status(403);\r",
+													"  const body = pm.response.json();\r",
+													"  pm.expect(body.detail).to.include(\"Solo los instructores pueden ver sus estudiantes asignados.\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{studentAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/assigned",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"assigned"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "All Students UN-AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Should return 403 Forbidden\", function () {\r",
+													"  pm.response.to.have.status(403);\r",
+													"  const body = pm.response.json();\r",
+													"  pm.expect(body.detail).to.include(\"Solo el jefe del Área de Bienestar puede ver todos los estudiantes.\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{instructorAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/admin/all",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"admin",
+												"all"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/students\");"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "INSTRUCTOR",
+					"item": [
+						{
+							"name": "AUTHORIZED",
+							"item": [
+								{
+									"name": "Instructors By Student AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/by-student/2003",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"by-student",
+												"2003"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "All Instructors AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "My Instructor AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{studentAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/my",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"my"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "UN-AUTHORIZED",
+							"item": [
+								{
+									"name": "Instructors By Student UN-AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Should return 403 Forbidden\", function () {\r",
+													"  pm.response.to.have.status(403);\r",
+													"  const body = pm.response.json();\r",
+													"  pm.expect(body.detail).to.include(\"Solo el jefe del Área de Bienestar puede ver los instructores de un estudiante.\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{instructorAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/by-student/2003",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"by-student",
+												"2003"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "All Instructors UN-AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Should return 403 Forbidden\", function () {\r",
+													"  pm.response.to.have.status(403);\r",
+													"  const body = pm.response.json();\r",
+													"  pm.expect(body.detail).to.include(\"Solo el jefe del Área de Bienestar puede ver todos los instructores.\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{instructorAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												""
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "My Instructor UN-AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Should return 403 Forbidden\", function () {\r",
+													"  pm.response.to.have.status(403);\r",
+													"  const body = pm.response.json();\r",
+													"  pm.expect(body.detail).to.include(\"Solo los estudiantes pueden ver sus propios instructores.\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{instructorAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/my",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"my"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/instructors\");"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "EXERCISE",
+					"item": [
+						{
+							"name": "AUTHORIZED",
+							"item": [
+								{
+									"name": "Exercises by Stundet AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{studentAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Exercises by Instructor AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{instructorAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "UN-AUTHORIZED",
+							"item": [
+								{
+									"name": "Exercises by Admin UN-AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Should return 403 Forbidden\", function () {\r",
+													"  pm.response.to.have.status(403);\r",
+													"  const body = pm.response.json();\r",
+													"  pm.expect(body.detail).to.include(\"Rol no autorizado para listar ejercicios.\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/exercises\");"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "ROUTINE",
+					"item": [
+						{
+							"name": "AUTHORIZED",
+							"item": [
+								{
+									"name": "Routines by Stundet AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{studentAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Routines by Instructor AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{instructorAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "UN-AUTHORIZED",
+							"item": [
+								{
+									"name": "Routines by Admin UN-AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Should return 403 Forbidden\", function () {\r",
+													"  pm.response.to.have.status(403);\r",
+													"  const body = pm.response.json();\r",
+													"  pm.expect(body.detail).to.include(\"Los administradores no pueden ver rutinas.\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/routines\");"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "ROUTINE_EXERCISE",
+					"item": [
+						{
+							"name": "AUTHORIZED",
+							"item": [
+								{
+									"name": "Routine_Exercise by Student AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{studentAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/2",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"2"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Routine_Exercise by InstructorAUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status is 200 OK\", function () {\r",
+													"  pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Response is JSON\", function () {\r",
+													"  pm.response.to.be.withBody;\r",
+													"  pm.response.to.be.json;\r",
+													"});\r",
+													"\r",
+													"pm.test(\"Authorization header was sent\", function () {\r",
+													"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{instructorAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/2",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"2"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "UN-AUTHORIZED",
+							"item": [
+								{
+									"name": "Routine_Exercise by Admin UN-AUTHORIZED",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Should return 403 Forbidden\", function () {\r",
+													"  pm.response.to.have.status(403);\r",
+													"  const body = pm.response.json();\r",
+													"  pm.expect(body.detail).to.include(\"Los administradores no pueden ver rutinas ni sus ejercicios.\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {},
+												"requests": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{adminAuthToken}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{base_url}}{{extra_url}}/2",
+											"host": [
+												"{{base_url}}{{extra_url}}"
+											],
+											"path": [
+												"2"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/routine-exercises\");"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "PUT",
+			"item": []
+		},
+		{
+			"name": "DELETE",
+			"item": [
+				{
+					"name": "Routine_Exercise UN-AUTHORIZED Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 403 Forbidden\", function () {\r",
+									"  pm.response.to.have.status(403);\r",
+									"  const body = pm.response.json();\r",
+									"  pm.expect(body.detail).to.include(\"Los administradores no pueden modificar rutinas.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/routine-exercises\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{extra_url}}/4",
+							"host": [
+								"{{base_url}}{{extra_url}}"
+							],
+							"path": [
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Routine_Exercise AUTHORIZED Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is JSON\", function () {\r",
+									"  pm.response.to.be.withBody;\r",
+									"  pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Authorization header was sent\", function () {\r",
+									"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Product created\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"  const res = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{instructorAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{extra_url}}/5",
+							"host": [
+								"{{base_url}}{{extra_url}}"
+							],
+							"path": [
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Exercise UN-AUTHORIZED",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 403 Forbidden\", function () {\r",
+									"  pm.response.to.have.status(403);\r",
+									"  const body = pm.response.json();\r",
+									"  pm.expect(body.detail).to.include(\"Solo el creador del ejercicio puede eliminar este ejercicio.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/exercises\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{studentAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{extra_url}}/5",
+							"host": [
+								"{{base_url}}{{extra_url}}"
+							],
+							"path": [
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Exercise AUTHORIZED",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/exercises\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is JSON\", function () {\r",
+									"  pm.response.to.be.withBody;\r",
+									"  pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Authorization header was sent\", function () {\r",
+									"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Product created\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"  const res = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{instructorAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{extra_url}}/5",
+							"host": [
+								"{{base_url}}{{extra_url}}"
+							],
+							"path": [
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assignment AUTHORIZED",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/assignments\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is JSON\", function () {\r",
+									"  pm.response.to.be.withBody;\r",
+									"  pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Authorization header was sent\", function () {\r",
+									"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Product created\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"  const res = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{extra_url}}/1008/2001",
+							"host": [
+								"{{base_url}}{{extra_url}}"
+							],
+							"path": [
+								"1008",
+								"2001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assignment UN-AUTHORIZED",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 403 Forbidden\", function () {\r",
+									"  pm.response.to.have.status(403);\r",
+									"  const body = pm.response.json();\r",
+									"  pm.expect(body.detail).to.include(\"Solo el jefe del Área de Bienestar puede eliminar asignaciones.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/assignments\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{instructorAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{extra_url}}/1008/2001",
+							"host": [
+								"{{base_url}}{{extra_url}}"
+							],
+							"path": [
+								"1008",
+								"2001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Routine UN-AUTHORIZED",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Should return 403 Forbidden\", function () {\r",
+									"  pm.response.to.have.status(403);\r",
+									"  const body = pm.response.json();\r",
+									"  pm.expect(body.detail).to.include(\"Solo el creador de la rutina puede eliminarla.\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/routines\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{instructorAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{extra_url}}/3",
+							"host": [
+								"{{base_url}}{{extra_url}}"
+							],
+							"path": [
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Routine AUTHORIZED",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"extra_url\", \"/routines\");"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is JSON\", function () {\r",
+									"  pm.response.to.be.withBody;\r",
+									"  pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Authorization header was sent\", function () {\r",
+									"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Product created\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"  const res = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{studentAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{extra_url}}/3",
+							"host": [
+								"{{base_url}}{{extra_url}}"
+							],
+							"path": [
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Routine by Instructor AUTHORIZED Copy",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response is JSON\", function () {\r",
+									"  pm.response.to.be.withBody;\r",
+									"  pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Authorization header was sent\", function () {\r",
+									"  pm.expect(pm.request.headers.has('Authorization')).to.be.true;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Routine Deleted\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"  const res = pm.response.json();\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{instructorAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{extra_url}}/4",
+							"host": [
+								"{{base_url}}{{extra_url}}"
+							],
+							"path": [
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000"
+		},
+		{
+			"key": "adminAuthToken",
+			"value": "none"
+		},
+		{
+			"key": "studentAuthToken",
+			"value": "none"
+		},
+		{
+			"key": "instructorAuthToken",
+			"value": "none"
+		},
+		{
+			"key": "extra_url",
+			"value": "none"
+		}
+	]
+}
