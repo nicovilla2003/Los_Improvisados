@@ -8,9 +8,9 @@ from app.routers import (
     assignment,
     exercise,
     routine,
-    routine_exercise
-    # progress,
-    # recommendation,
+    routine_exercise,
+    progress,
+    recommendation,
     # stats,
 )
 
@@ -36,8 +36,8 @@ app.include_router(assignment.router)
 app.include_router(exercise.router)
 app.include_router(routine.router)
 app.include_router(routine_exercise.router)
-# app.include_router(progress.router)
-# app.include_router(recommendation.router)
+app.include_router(progress.router)
+app.include_router(recommendation.router)
 # app.include_router(stats.router)
 
 @app.get("/")

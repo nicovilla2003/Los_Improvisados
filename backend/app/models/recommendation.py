@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
-from sqlalchemy.sql import func
-from app.database.connection import Base
 from datetime import datetime, timezone
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+
+from app.database.connection import Base
+
 
 class Recommendation(Base):
     __tablename__ = "recommendations"
@@ -12,3 +14,6 @@ class Recommendation(Base):
     message = Column(Text, nullable=False)
     progress_doc_id = Column(String(50), nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    trainer = relationship("Employee")
+    student = relationship("Student")
