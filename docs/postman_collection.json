@@ -1,0 +1,621 @@
+{
+  "info": {
+    "_postman_id": "c3c2d17a-2f7e-4575-8b6d-8e96a9b8f0b9",
+    "name": "GymIcesi API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Colección de pruebas para los endpoints del backend de GymIcesi, incluyendo progreso en MongoDB y recomendaciones."
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login estudiante",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{student_username}}\",\n  \"password\": \"{{student_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});",
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {\n    pm.collectionVariables.set(\"student_token\", jsonData.access_token);\n}\n"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login instructor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{trainer_username}}\",\n  \"password\": \"{{trainer_password}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});",
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.access_token) {\n    pm.collectionVariables.set(\"trainer_token\", jsonData.access_token);\n}\n"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Progress",
+      "item": [
+        {
+          "name": "Crear log de progreso (estudiante)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"exercise_id\": {{exercise_id}},\n  \"routine_id\": {{routine_id}},\n  \"reps\": 12,\n  \"sets\": 3,\n  \"weight_kg\": 30,\n  \"duration_seconds\": 900,\n  \"perceived_exertion\": 7,\n  \"notes\": \"Series controladas y buena técnica\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/progress/logs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                "logs"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\n    pm.response.to.have.status(201);\n});",
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.id) {\n    pm.collectionVariables.set(\"progress_log_id\", jsonData.id);\n}\n"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener log de progreso",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/logs/{{progress_log_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                "logs",
+                "{{progress_log_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar progreso por estudiante",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/students/{{student_id}}/logs?exercise_id={{exercise_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                "students",
+                "{{student_id}}",
+                "logs"
+              ],
+              "query": [
+                {
+                  "key": "exercise_id",
+                  "value": "{{exercise_id}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar log de progreso",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Agregada una serie extra con buen control\",\n  \"perceived_exertion\": 8\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/progress/logs/{{progress_log_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                "logs",
+                "{{progress_log_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar log de progreso",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/logs/{{progress_log_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                "logs",
+                "{{progress_log_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtrar progreso por fecha y rutina",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/progress/students/{{student_id}}/logs?routine_id={{routine_id}}&start={{start_date}}&end={{end_date}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "progress",
+                "students",
+                "{{student_id}}",
+                "logs"
+              ],
+              "query": [
+                {
+                  "key": "routine_id",
+                  "value": "{{routine_id}}"
+                },
+                {
+                  "key": "start",
+                  "value": "{{start_date}}"
+                },
+                {
+                  "key": "end",
+                  "value": "{{end_date}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Recommendations",
+      "item": [
+        {
+          "name": "Crear recomendación",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{trainer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"student_id\": \"{{student_id}}\",\n  \"message\": \"Buen ritmo, podrías subir 2kg en la siguiente sesión\",\n  \"progress_doc_id\": \"{{progress_log_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/recommendations",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recommendations"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\n    pm.response.to.have.status(201);\n});",
+                  "const jsonData = pm.response.json();",
+                  "if (jsonData.id) {\n    pm.collectionVariables.set(\"recommendation_id\", jsonData.id);\n}\n"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar recomendaciones por estudiante",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{trainer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recommendations/students/{{student_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recommendations",
+                "students",
+                "{{student_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Obtener recomendación por id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{trainer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recommendations/{{recommendation_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recommendations",
+                "{{recommendation_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Actualizar recomendación",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{trainer_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Recordatorio de movilidad y estiramiento adicional\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/recommendations/{{recommendation_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recommendations",
+                "{{recommendation_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Eliminar recomendación",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{trainer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recommendations/{{recommendation_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recommendations",
+                "{{recommendation_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Listar recomendaciones (estudiante)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{student_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/recommendations/students/{{student_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "recommendations",
+                "students",
+                "{{student_id}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "student_username",
+      "value": "laura.h"
+    },
+    {
+      "key": "student_password",
+      "value": "CAMBIAR_ESTUDIANTE"
+    },
+    {
+      "key": "trainer_username",
+      "value": "paula.r"
+    },
+    {
+      "key": "trainer_password",
+      "value": "CAMBIAR_INSTRUCTOR"
+    },
+    {
+      "key": "student_id",
+      "value": "2001"
+    },
+    {
+      "key": "exercise_id",
+      "value": "1"
+    },
+    {
+      "key": "routine_id",
+      "value": "1"
+    },
+    {
+      "key": "student_token",
+      "value": ""
+    },
+    {
+      "key": "trainer_token",
+      "value": ""
+    },
+    {
+      "key": "progress_log_id",
+      "value": ""
+    },
+    {
+      "key": "recommendation_id",
+      "value": ""
+    },
+    {
+      "key": "start_date",
+      "value": "2024-05-01T00:00:00"
+    },
+    {
+      "key": "end_date",
+      "value": "2024-05-31T23:59:59"
+    }
+  ]
+}
