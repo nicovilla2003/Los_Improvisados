@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getProgressLogs, getStudentSummary } from '../services/api';
 import '../styles/Dashboard.css';
 
 const StudentDashboard = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [summary, setSummary] = useState(null);
   const [recentLogs, setRecentLogs] = useState([]);
@@ -136,10 +138,10 @@ const StudentDashboard = () => {
       </div>
 
       <div className="dashboard-actions">
-        <button className="action-button primary">
-          Ver Mis Rutinas
-        </button>
-        <button className="action-button secondary">
+        <button 
+          className="action-button primary"
+          onClick={() => navigate('/student/progress')}
+        >
           Registrar Progreso
         </button>
       </div>

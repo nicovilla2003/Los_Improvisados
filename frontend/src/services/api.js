@@ -149,7 +149,7 @@ export const deleteProgressLog = async (logId) => {
 
 // ============ TRAINERS ============
 export const getAllTrainers = async () => {
-  const response = await api.get('/trainers');
+  const response = await api.get('/instructors');
   return response.data;
 };
 

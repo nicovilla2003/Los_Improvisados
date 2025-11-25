@@ -1,15 +1,21 @@
-// src/App.js
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { login as apiLogin, adminLogin as apiAdminLogin } from "./services/api";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/sidebar";
 
 // Pages
 import StudentDashboard from "./pages/StudentDashboard";
 import TrainerDashboard from "./pages/TrainerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import AssignTrainer from "./pages/AssignTrainer";
+import ExercisesPage from "./pages/ExercisesPage";
+import RoutinesPage from "./pages/RoutinesPage";
+import NewRoutinePage from "./pages/NewRoutinePage";
+import StudentsListPage from "./pages/StudentsListPage";
+import TrainerStudentsPage from "./pages/TrainerStudentsPage";
+import StudentRoutineProgress from "./pages/StudentRoutineProgress";
+import TrainerRoutineProgress from "./pages/TrainerRoutineProgress";
 
 import "./App.css";
 
@@ -235,10 +241,46 @@ function AppRoutes() {
         </ProtectedRoute>
       } />
 
+      <Route path="/student/progress" element={
+        <ProtectedRoute allowedRoles={["STUDENT"]}>
+          <StudentRoutineProgress />
+        </ProtectedRoute>
+      } />
+
       {/* Rutas de Entrenador */}
       <Route path="/trainer" element={
         <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
           <TrainerDashboard />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/trainer/exercises" element={
+        <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+          <ExercisesPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/trainer/routines" element={
+        <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+          <RoutinesPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/trainer/routines/new" element={
+        <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+          <NewRoutinePage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/trainer/students" element={
+        <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+          <TrainerStudentsPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/trainer/students/:studentId/progress" element={
+        <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+          <TrainerRoutineProgress />
         </ProtectedRoute>
       } />
 
@@ -252,6 +294,12 @@ function AppRoutes() {
       <Route path="/admin/assignments" element={
         <ProtectedRoute requireAdmin={true}>
           <AssignTrainer />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/admin/students" element={
+        <ProtectedRoute requireAdmin={true}>
+          <StudentsListPage />
         </ProtectedRoute>
       } />
 

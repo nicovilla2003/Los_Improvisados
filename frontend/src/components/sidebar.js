@@ -35,7 +35,6 @@ const Sidebar = () => {
     if (user?.role === 'STUDENT') {
       return [
         { path: '/student', label: 'Dashboard', icon: '📊' },
-        { path: '/student/routines', label: 'Mis Rutinas', icon: '📝' },
         { path: '/student/progress', label: 'Mi Progreso', icon: '📈' },
       ];
     }
