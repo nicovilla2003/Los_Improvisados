@@ -8,7 +8,7 @@ load_dotenv()
 
 PG_HOST = os.getenv("PG_HOST", "localhost")
 PG_PORT = os.getenv("PG_PORT", "5433")
-PG_USER = os.getenv("PG_USER", "postgres")
+PG_USER = os.getenv("PG_USER", "gym_app_dev")
 PG_PASSWORD = os.getenv("PG_PASSWORD", "")
 PG_DATABASE = os.getenv("PG_DATABASE", "gym_icesi")
 
